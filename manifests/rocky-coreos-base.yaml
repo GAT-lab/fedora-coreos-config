@@ -1,0 +1,60 @@
+# Inherits from "Core"
+
+
+include:
+  - ignition-and-ostree.yaml
+  - shared-workarounds.yaml
+  - system-configuration.yaml
+  - user-experience.yaml
+
+conditional-include:
+  - if: releasever <= 8
+    include: fallback-hostname.yaml
+
+ostree-layers:
+  - overlay/05core
+  - overlay/08nouveau
+  - overlay/09misc
+  - overlay/20platform-chrony
+
+
+recommends: false
+packages:
+  - rpm
+  - policycoreutils
+  - kernel
+  - kernel-modules-extra
+  - rpm-ostree
+  - ostree-grub2
+  - selinux-policy-targeted
+  - biosdevname
+  - keyutils
+  - binutils
+  - nss-altfiles
+  - polkit
+  - coreos-installer
+
+ignore-removed-users:
+  - root
+ignore-removed-groups:
+  - root
+etc-group-members:
+  - wheel
+  - sudo
+  - systemd-journal
+  - adm
+  - docker
+
+check-passwd:
+  type: "file"
+  filename: "passwd"
+check-groups:
+  type: "file"
+  filename: "group"
+
+# See https://github.com/coreos/bootupd
+arch-include:
+  x86_64: bootupd.yaml
+  aarch64: bootupd.yaml
+
+default-target: multi-user.target
